@@ -12,6 +12,9 @@ namespace Opeity {
         WebSession Session;
 
         public MainWindow() {
+            //TODO: Change Initialization Method
+            // This was copied from the winforms version
+            // and i'm not sure if its actually working
             if (!WebCore.IsInitialized) {
                 WebCore.Initialize(new WebConfig() {
                     ReduceMemoryUsageOnNavigation = true,
@@ -111,6 +114,10 @@ namespace Opeity {
 
         private void C_BTN_Stop_Click(object sender, RoutedEventArgs e) {
             webControl.Stop();
+        }
+
+        private void webControl_DocumentReady(object sender, DocumentReadyEventArgs e) {
+            
         }
     }
 }
