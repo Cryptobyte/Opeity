@@ -8,7 +8,7 @@ namespace Opeity {
             if (!WebCore.IsInitialized) {
                 WebCore.Initialize(new WebConfig() {
                     HomeURL = new System.Uri(Settings.Default.Home),
-                    ReduceMemoryUsageOnNavigation = true,
+                    ReduceMemoryUsageOnNavigation = Settings.Default._Bool_FreeMemoryOnNav,
                     UserAgent = Settings.Default.UserAgent
                 });
             }

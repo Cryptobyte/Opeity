@@ -3,25 +3,64 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using Awesomium.Core;
 using MahApps.Metro.Controls;
+using NDatabase;
 using Opeity.Components;
+using Opeity.Components.Classes;
 using Opeity.Properties;
 
 namespace Opeity {
     public partial class MainWindow : MetroWindow {
-        public Profiler Profile = new Profiler();
         WebSession Session;
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Loads the Favorites list to the DataGrid
+        /// This is probably temporary because in WPF binding is more efficient
+        /// </summary>
+        private void LoadFavorites() {
+            if (GV_Favorites.Items.Count > 0)
+                GV_Favorites.Items.Clear();
+
+            using (var _odb = OdbFactory.Open(Profiler.UserFavorites)) {
+                var _Favorites = _odb.QueryAndExecute<Favorite>();
+
+                foreach (Favorite _Fav in _Favorites) {
+                    GV_Favorites.Items.Add(_Fav);
+                }
+            }
+        }
+
+        private bool FavoriteExists(String Url) {
+            using (var _odb = OdbFactory.Open(Profiler.UserFavorites)) {
+                var _Favorites = _odb.QueryAndExecute<Favorite>();
+
+                foreach (Favorite _Fav in _Favorites) {
+                    if (_Fav.Url == Url)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        #endregion
 
         public MainWindow() {
             InitializeComponent();
 
-            Session = WebCore.Sessions[Profile.UserProfileBase] ?? WebCore.CreateWebSession(Profile.UserProfileBase, WebPreferences.Default);
+            Session = WebCore.Sessions[Profiler.UserProfileBase] ?? WebCore.CreateWebSession(Profiler.UserProfileBase, WebPreferences.Default);
             webControl.WebSession = Session;
-            
+
             if (Environment.GetCommandLineArgs().Length > 1)
                 webControl.Source = new Uri(Environment.GetCommandLineArgs()[1]);
             else
                 webControl.Source = new Uri(Settings.Default.Home);
+
+            LoadFavorites();
         }
+
+        #region Window Browser Controls
 
         private void C_BTN_Back_Click(object sender, RoutedEventArgs e) {
             if (webControl.CanGoBack())
@@ -41,15 +80,62 @@ namespace Opeity {
                 webControl.GoForward();
         }
 
+        #endregion
+
+        #region Favorites Flyout
+
         private void C_BTN_Favorites_Click(object sender, RoutedEventArgs e) {
+            TBox_Title.Text = webControl.Title;
+            TBox_Url.Text = webControl.Source.ToString();
+
             var flyout = this.Flyouts.Items[0] as Flyout;
             flyout.IsOpen = !flyout.IsOpen;
         }
+
+        private void Btn_Fav_Add_Click(object sender, RoutedEventArgs e) {
+            var flyout = this.Flyouts.Items[0] as Flyout;
+            if (flyout.IsOpen)
+                flyout.IsOpen = false;
+
+            Favorite _toAdd = new Favorite() {
+                Title = TBox_Title.Text,
+                Url = TBox_Url.Text
+            };
+
+            using (var _odb = OdbFactory.Open(Profiler.UserFavorites)) {
+                _odb.Store(_toAdd);
+            }
+
+            LoadFavorites();
+        }
+
+        private void Btn_Fav_Cancel_Click(object sender, RoutedEventArgs e) {
+            var flyout = this.Flyouts.Items[0] as Flyout;
+            if (flyout.IsOpen)
+                flyout.IsOpen = false;
+        }
+
+        private void GV_Favorites_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            var flyout = this.Flyouts.Items[0] as Flyout;
+            if (flyout.IsOpen)
+                flyout.IsOpen = false;
+
+            webControl.Source = new Uri(((Favorite)GV_Favorites.SelectedItem).Url);
+
+            if (GV_Favorites.SelectedItem != null)
+                GV_Favorites.SelectedItem = null;
+        }
+
+        #endregion
+
+        #region Settings Flyout
 
         private void C_BTN_Settings_Click(object sender, RoutedEventArgs e) {
             var flyout = this.Flyouts.Items[1] as Flyout;
             flyout.IsOpen = !flyout.IsOpen;
         }
+
+        #endregion
 
         private void webControl_LoadingFrame(object sender, LoadingFrameEventArgs e) {
             Storyboard board = new Storyboard();
@@ -75,6 +161,18 @@ namespace Opeity {
 
             C_BTN_Stop.Visibility = System.Windows.Visibility.Collapsed;
             C_BTN_Refresh.Visibility = System.Windows.Visibility.Visible;
+
+            if (FavoriteExists(webControl.Source.ToString())) {
+                C_BTN_Favorites.Visibility = System.Windows.Visibility.Collapsed;
+                C_BTN_Favorites_H.Visibility = System.Windows.Visibility.Visible;
+            } else {
+                C_BTN_Favorites_H.Visibility = System.Windows.Visibility.Collapsed;
+                C_BTN_Favorites.Visibility = System.Windows.Visibility.Visible;
+            }
+        }
+
+        private void webControl_DocumentReady(object sender, DocumentReadyEventArgs e) {
+
         }
 
         private void webControl_LoadingFrameFailed(object sender, LoadingFrameFailedEventArgs e) {
@@ -87,20 +185,12 @@ namespace Opeity {
             C_BTN_Refresh.Visibility = System.Windows.Visibility.Visible;
         }
 
-        private void webControl_TitleChanged(object sender, TitleChangedEventArgs e) {
-            this.Title = e.Title;
-        }
-
         private void C_BTN_Refresh_iCache(object sender, RoutedEventArgs e) {
             webControl.Reload(true);
         }
 
         private void C_BTN_Stop_Click(object sender, RoutedEventArgs e) {
             webControl.Stop();
-        }
-
-        private void webControl_DocumentReady(object sender, DocumentReadyEventArgs e) {
-            
         }
 
         private void webControl_JavascriptRequest(object sender, JavascriptRequestEventArgs e) {
@@ -139,6 +229,15 @@ namespace Opeity {
 
         private void webControl_ShowJavascriptDialog(object sender, JavascriptDialogEventArgs e) {
             
+        }
+
+        private void webControl_WindowClose(object sender, WindowCloseEventArgs e) {
+            if (!e.IsCalledFromFrame)
+                this.Close();
+        }
+
+        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            Settings.Default.Save(); //Catch-All Setting Save
         }
     }
 }

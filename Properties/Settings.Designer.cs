@@ -59,5 +59,17 @@ namespace Opeity.Properties {
                 this["UserAgent"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool _Bool_FreeMemoryOnNav {
+            get {
+                return ((bool)(this["_Bool_FreeMemoryOnNav"]));
+            }
+            set {
+                this["_Bool_FreeMemoryOnNav"] = value;
+            }
+        }
     }
 }

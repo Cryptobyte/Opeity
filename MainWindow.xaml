@@ -4,7 +4,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:awe="http://schemas.awesomium.com/winfx" x:Class="Opeity.MainWindow"
         xmlns:op="clr-namespace:Opeity"
-        Title="Opeity" Height="600" Width="1000" Icon="Browser.ico" EnableDWMDropShadow="True" ShowIconOnTitleBar="False" TitleCaps="False" LeftWindowCommandsOverlayBehavior="Never" RightWindowCommandsOverlayBehavior="Never" SaveWindowPosition="True">
+        Title="{Binding Title, ElementName=webControl}" Height="600" Width="1000" Icon="Browser.ico" EnableDWMDropShadow="True" ShowIconOnTitleBar="False" TitleCaps="False" LeftWindowCommandsOverlayBehavior="Never" RightWindowCommandsOverlayBehavior="Never" SaveWindowPosition="True" Closing="MetroWindow_Closing">
 
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
@@ -79,7 +79,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="15" Height="15" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}">
                         <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_star}" />
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_star_add}" />
                         </Rectangle.OpacityMask>
                     </Rectangle>
                 </StackPanel>
@@ -109,8 +109,38 @@
 
     <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
-            <Controls:Flyout Header="Favorites" Position="Right" Theme="Accent" TitleVisibility="Hidden" CloseButtonVisibility="Hidden" IsModal="True" Width="300" IsPinned="False">
-                <Frame Source="/Opeity;component/Views/Favorites.xaml" />
+            <Controls:Flyout Header="Favorites" Position="Right" Theme="Accent" IsModal="True" Width="300" IsPinned="False">
+                <Grid>
+                    <Grid VerticalAlignment="Top" Height="100" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="75" />
+                            <RowDefinition Height="25" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="75" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Row="0" Grid.Column="0" Source="/Opeity;component/Images/Interface/Favorite.png" Stretch="Fill" Height="50" Width="50" Margin="0,-10,0,0" />
+                        <TextBox x:Name="TBox_Title" Text="Title" Grid.Row="0" Grid.Column="1" Height="25" VerticalAlignment="Top" Margin="5,5,5,0" />
+                        <TextBox x:Name="TBox_Url" Text="Url" Grid.Row="0" Grid.Column="1" Height="25" VerticalAlignment="Top" Margin="5,35,5,0" />
+                        <Button x:Name="Btn_Fav_Add" Content="Add" Grid.Row="1" Grid.Column="1" Width="75" Height="15" HorizontalAlignment="Center" Margin="0,0,20,0" Click="Btn_Fav_Add_Click" />
+                        <Button x:Name="Btn_Fav_Cancel" Content="Cancel" Grid.Row="1" Grid.Column="1" Width="75" Height="15" HorizontalAlignment="Right" Margin="0,0,5,0" Click="Btn_Fav_Cancel_Click" />
+                    </Grid>
+                    <DataGrid x:Name="GV_Favorites" Background="Transparent" Margin="5,110,5,0" AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" HeadersVisibility="None" GridLinesVisibility="None" SelectionMode="Single" IsReadOnly="True" MouseDoubleClick="GV_Favorites_MouseDoubleClick">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="{StaticResource AccentColor}" />
+                            </Style>
+                        </DataGrid.RowStyle>
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Path=Title}" ClipboardContentBinding="{x:Null}" Header="Title" Width="65" />
+                            <DataGridTextColumn Binding="{Binding Path=Url}" ClipboardContentBinding="{x:Null}" Header="Url" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </Controls:Flyout>
 
             <Controls:Flyout Header="Settings" Position="Right" Theme="Accent" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}">
@@ -121,6 +151,6 @@
 
     <Grid>
         <ProgressBar Name="Prog" Margin="0,0,0,0" VerticalAlignment="Top" Panel.ZIndex="1" Height="0" IsIndeterminate="True" />
-        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" TitleChanged="webControl_TitleChanged" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog"/>
+        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose"/>
     </Grid>
 </Controls:MetroWindow>
