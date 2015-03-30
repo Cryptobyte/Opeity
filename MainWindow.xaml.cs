@@ -12,16 +12,6 @@ namespace Opeity {
         WebSession Session;
 
         public MainWindow() {
-            //TODO: Change Initialization Method
-            // This was copied from the winforms version
-            // and i'm not sure if its actually working
-            if (!WebCore.IsInitialized) {
-                WebCore.Initialize(new WebConfig() {
-                    ReduceMemoryUsageOnNavigation = true,
-                    LogLevel = LogLevel.None
-                });
-            }
-
             InitializeComponent();
 
             Session = WebCore.Sessions[Profile.UserProfileBase] ?? WebCore.CreateWebSession(Profile.UserProfileBase, WebPreferences.Default);
@@ -61,16 +51,9 @@ namespace Opeity {
             flyout.IsOpen = !flyout.IsOpen;
         }
 
-        private void MetroWindow_Closed(object sender, EventArgs e) {
-            if (Settings.Default.Windows <= 1) {
-                webControl.Dispose();
-                WebCore.Shutdown();
-            }
-        }
-
         private void webControl_LoadingFrame(object sender, LoadingFrameEventArgs e) {
             Storyboard board = new Storyboard();
-            DoubleAnimation PR_S_In = new DoubleAnimation(0, 5, new Duration(TimeSpan.FromMilliseconds(200)));
+            DoubleAnimation PR_S_In = new DoubleAnimation(0, 5, new Duration(TimeSpan.FromMilliseconds(150)));
 
             board.Children.Add(PR_S_In);
             Storyboard.SetTarget(PR_S_In, Prog);
@@ -83,7 +66,7 @@ namespace Opeity {
 
         private void webControl_LoadingFrameComplete(object sender, FrameEventArgs e) {
             Storyboard board = new Storyboard();
-            DoubleAnimation PR_S_Ou = new DoubleAnimation(5, 0, new Duration(TimeSpan.FromMilliseconds(200)));
+            DoubleAnimation PR_S_Ou = new DoubleAnimation(5, 0, new Duration(TimeSpan.FromMilliseconds(150)));
 
             board.Children.Add(PR_S_Ou);
             Storyboard.SetTarget(PR_S_Ou, Prog);
@@ -117,6 +100,44 @@ namespace Opeity {
         }
 
         private void webControl_DocumentReady(object sender, DocumentReadyEventArgs e) {
+            
+        }
+
+        private void webControl_JavascriptRequest(object sender, JavascriptRequestEventArgs e) {
+            if (!e.RequestToken)
+                return;
+
+            if (e.Request != JavascriptRequest.Minimize) {
+
+                if (this.WindowState != System.Windows.WindowState.Minimized)
+                    this.WindowState = System.Windows.WindowState.Minimized;
+
+                e.Handled = true;
+                return;
+            }
+
+            if (e.Request != JavascriptRequest.Maximize) {
+
+                if (this.WindowState != System.Windows.WindowState.Maximized)
+                    this.WindowState = System.Windows.WindowState.Maximized;
+
+                e.Handled = true;
+                return;
+            }
+
+            if (e.Request != JavascriptRequest.Restore) {
+                
+                if ((this.WindowState == System.Windows.WindowState.Minimized) ||
+                    (this.WindowState == System.Windows.WindowState.Maximized)) {
+                        this.WindowState = System.Windows.WindowState.Normal;
+                }
+
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void webControl_ShowJavascriptDialog(object sender, JavascriptDialogEventArgs e) {
             
         }
     }
