@@ -31,6 +31,11 @@ namespace Opeity {
             }
         }
 
+        /// <summary>
+        /// Checks if a Favorite exists in the database using only a supplied Url
+        /// </summary>
+        /// <param name="Url">Url to check for in Favorites database</param>
+        /// <returns></returns>
         private bool FavoriteExists(String Url) {
             using (var _odb = OdbFactory.Open(Profiler.UserFavorites)) {
                 var _Favorites = _odb.QueryAndExecute<Favorite>();
