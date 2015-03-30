@@ -1,5 +1,6 @@
 # Opeity
-Extremely Simple WPF Web Browser
+
+![Opeity Screenshot](http://i.imgur.com/yqPNU8j.png "Extremely Simple WPF Web Browser")
 
 #### What Opeity Is
 Opeity is a lightweight(ish) simple web browser based on [Awesomium](www.awesomium.com). Its purpose is to be a modern browser 
