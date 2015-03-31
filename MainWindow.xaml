@@ -146,11 +146,15 @@
             <Controls:Flyout Header="Settings" Position="Right" Theme="Accent" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}">
                 <Frame Source="/Opeity;component/Views/Settings.xaml" />
             </Controls:Flyout>
+
+            <Controls:Flyout Header="Notify" Position="Bottom" Theme="Accent" IsModal="False" IsPinned="True" CloseButtonVisibility="Collapsed" TitleVisibility="Collapsed" Height="50" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}">
+                <Label Name="Notify_Label" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            </Controls:Flyout>
         </Controls:FlyoutsControl>
     </Controls:MetroWindow.Flyouts>
 
     <Grid>
         <ProgressBar Name="Prog" Margin="0,0,0,0" VerticalAlignment="Top" Panel.ZIndex="1" Height="0" IsIndeterminate="True" />
-        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose" ShowCreatedWebView="webControl_ShowCreatedWebView"/>
+        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose" ShowCreatedWebView="webControl_ShowCreatedWebView" />
     </Grid>
 </Controls:MetroWindow>

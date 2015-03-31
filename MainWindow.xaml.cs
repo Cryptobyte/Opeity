@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using Awesomium.Core;
 using MahApps.Metro.Controls;
 using NDatabase;
@@ -13,6 +14,42 @@ namespace Opeity {
         PrefAdapter Prefs;
 
         #region Helper Methods
+
+        /// <summary>
+        /// Checks if the WebCore has active downloads
+        /// </summary>
+        /// <returns>True if WebCore has active downloads, False if no active downloads</returns>
+        private bool HasActiveDownloads() {
+            WebCore.Downloads.ClearNonActive();
+            return WebCore.Downloads.Count > 0;
+        }
+
+        /// <summary>
+        /// Opens the Notify Flyout for a short time
+        /// </summary>
+        /// <param name="Message">Message to show user</param>
+        private void Notify(String Message) {
+            var flyout = this.Flyouts.Items[2] as Flyout;
+
+            if (flyout.IsOpen)
+                return;
+
+            Notify_Label.Content = Message;
+
+            DispatcherTimer dTx = new DispatcherTimer();
+
+            dTx.Tick += delegate {
+                dTx.Stop();
+
+                if (flyout.IsOpen)
+                    flyout.IsOpen = false;
+            };
+
+            dTx.Interval = new TimeSpan(0, 0, 3);
+            dTx.Start();
+
+            flyout.IsOpen = true;
+        }
 
         /// <summary>
         /// Loads the Favorites list to the DataGrid
@@ -66,7 +103,30 @@ namespace Opeity {
 
             #endregion
 
+            #region Web Preferences
+
+            WebPreferences.Default.CanScriptsAccessClipboard = true;
+            WebPreferences.Default.Databases = true;
+            WebPreferences.Default.EnableGPUAcceleration = true;
+            WebPreferences.Default.FileAccessFromFileURL = true;
+            WebPreferences.Default.ProxyConfig = "auto";
+            WebPreferences.Default.UniversalAccessFromFileURL = true;
+            WebPreferences.Default.WebGL = true;
+            WebCore.DownloadBegin += OnDownloadBegin;
+
+            #endregion
+
             LoadFavorites();
+        }
+
+        private void OnDownloadBegin(object sender, DownloadBeginEventArgs e) {
+            Notify(String.Format("Downloading {0}", e.Info.FileName));
+
+            e.Info.Completed += delegate {
+                if (!HasActiveDownloads()) {
+                    //All Downloads Finished
+                }
+            };
         }
 
         #region Window Browser Controls
@@ -254,6 +314,10 @@ namespace Opeity {
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            if (HasActiveDownloads()) {
+                //Downloads are still running!
+            }
+
             Prefs.Save();
         }
 
