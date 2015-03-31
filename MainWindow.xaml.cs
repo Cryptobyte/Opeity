@@ -142,6 +142,8 @@ namespace Opeity {
 
         #endregion
 
+        #region Frame Events
+
         private void webControl_LoadingFrame(object sender, LoadingFrameEventArgs e) {
             Storyboard board = new Storyboard();
             DoubleAnimation PR_S_In = new DoubleAnimation(0, 5, new Duration(TimeSpan.FromMilliseconds(150)));
@@ -190,6 +192,8 @@ namespace Opeity {
             C_BTN_Refresh.Visibility = System.Windows.Visibility.Visible;
         }
 
+        #endregion
+
         private void C_BTN_Refresh_iCache(object sender, RoutedEventArgs e) {
             webControl.Reload(true);
         }
@@ -208,7 +212,6 @@ namespace Opeity {
                     this.WindowState = System.Windows.WindowState.Minimized;
 
                 e.Handled = true;
-                return;
             }
 
             if (e.Request != JavascriptRequest.Maximize) {
@@ -217,7 +220,6 @@ namespace Opeity {
                     this.WindowState = System.Windows.WindowState.Maximized;
 
                 e.Handled = true;
-                return;
             }
 
             if (e.Request != JavascriptRequest.Restore) {
@@ -228,7 +230,6 @@ namespace Opeity {
                 }
 
                 e.Handled = true;
-                return;
             }
         }
 
@@ -242,7 +243,7 @@ namespace Opeity {
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            Settings.Default.Save(); //Catch-All Setting Save
+            Settings.Default.Save(); //Catch-All Settings Save
         }
     }
 }
