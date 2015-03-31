@@ -65,5 +65,17 @@ namespace Opeity.Components {
                 );
             }
         }
+
+        /// <summary>
+        /// Path to the currently logged in users Preferences database file
+        /// </summary>
+        public static String UserPreferences {
+            get {
+                return Path.Combine(
+                    Profiler.UserProfileBase,
+                    "Preferences"
+                );
+            }
+        }
     }
 }

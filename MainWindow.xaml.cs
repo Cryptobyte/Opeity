@@ -6,11 +6,11 @@ using MahApps.Metro.Controls;
 using NDatabase;
 using Opeity.Components;
 using Opeity.Components.Classes;
-using Opeity.Properties;
 
 namespace Opeity {
     public partial class MainWindow : MetroWindow {
         WebSession Session;
+        PrefAdapter Prefs;
 
         #region Helper Methods
 
@@ -51,16 +51,20 @@ namespace Opeity {
 
         #endregion
 
+        /// <summary>
+        /// Main entry point
+        /// </summary>
         public MainWindow() {
             InitializeComponent();
+
+            #region Session Logic
 
             Session = WebCore.Sessions[Profiler.UserProfileBase] ?? WebCore.CreateWebSession(Profiler.UserProfileBase, WebPreferences.Default);
             webControl.WebSession = Session;
 
-            if (Environment.GetCommandLineArgs().Length > 1)
-                webControl.Source = new Uri(Environment.GetCommandLineArgs()[1]);
-            else
-                webControl.Source = new Uri(Settings.Default.Home);
+            Prefs = new PrefAdapter();
+
+            #endregion
 
             LoadFavorites();
         }
@@ -73,7 +77,7 @@ namespace Opeity {
         }
 
         private void C_BTN_Home_Click(object sender, RoutedEventArgs e) {
-            webControl.Source = new Uri(Settings.Default.Home);
+            webControl.GoToHome();
         }
 
         private void C_BTN_Refresh_Click(object sender, RoutedEventArgs e) {
@@ -242,8 +246,27 @@ namespace Opeity {
                 this.Close();
         }
 
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e) {
+            if (Environment.GetCommandLineArgs().Length > 1)
+                webControl.Source = new Uri(Environment.GetCommandLineArgs()[1]);
+            else
+                webControl.GoToHome();
+        }
+
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            Settings.Default.Save(); //Catch-All Settings Save
+            Prefs.Save();
+        }
+
+        private void webControl_ShowCreatedWebView(object sender, ShowCreatedWebViewEventArgs e) {
+            if (webControl == null)
+                return;
+
+            if (!webControl.IsLive)
+                return;
+
+            e.Cancel = true;
+
+            webControl.Source = e.TargetURL; //Force all popups into the main view (Temporary)
         }
     }
 }

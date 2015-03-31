@@ -4,7 +4,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:awe="http://schemas.awesomium.com/winfx" x:Class="Opeity.MainWindow"
         xmlns:op="clr-namespace:Opeity"
-        Title="{Binding Title, ElementName=webControl}" Height="600" Width="1000" Icon="Browser.ico" EnableDWMDropShadow="True" ShowIconOnTitleBar="False" TitleCaps="False" LeftWindowCommandsOverlayBehavior="Never" RightWindowCommandsOverlayBehavior="Never" SaveWindowPosition="True" Closing="MetroWindow_Closing">
+        Title="{Binding Title, ElementName=webControl}" Height="600" Width="1000" Icon="Browser.ico" EnableDWMDropShadow="True" ShowIconOnTitleBar="False" TitleCaps="False" LeftWindowCommandsOverlayBehavior="Never" RightWindowCommandsOverlayBehavior="Never" SaveWindowPosition="True" Closing="MetroWindow_Closing" Loaded="MetroWindow_Loaded">
 
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
@@ -151,6 +151,6 @@
 
     <Grid>
         <ProgressBar Name="Prog" Margin="0,0,0,0" VerticalAlignment="Top" Panel.ZIndex="1" Height="0" IsIndeterminate="True" />
-        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose"/>
+        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose" ShowCreatedWebView="webControl_ShowCreatedWebView"/>
     </Grid>
 </Controls:MetroWindow>
