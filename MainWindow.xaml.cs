@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Awesomium.Core;
 using MahApps.Metro.Controls;
@@ -141,7 +140,10 @@ namespace Opeity {
         }
 
         private void C_BTN_Refresh_Click(object sender, RoutedEventArgs e) {
-            webControl.Reload(false);
+            if (webControl.IsNavigating)
+                webControl.Stop();
+            else
+                webControl.Reload(false);
         }
 
         private void C_BTN_Forward_Click(object sender, RoutedEventArgs e) {
@@ -209,30 +211,10 @@ namespace Opeity {
         #region Frame Events
 
         private void webControl_LoadingFrame(object sender, LoadingFrameEventArgs e) {
-            Storyboard board = new Storyboard();
-            DoubleAnimation PR_S_In = new DoubleAnimation(0, 5, new Duration(TimeSpan.FromMilliseconds(150)));
-
-            board.Children.Add(PR_S_In);
-            Storyboard.SetTarget(PR_S_In, Prog);
-            Storyboard.SetTargetProperty(PR_S_In, new PropertyPath("(Height)"));
-            board.Begin();
-
-            C_BTN_Refresh.Visibility = System.Windows.Visibility.Collapsed;
-            C_BTN_Stop.Visibility = System.Windows.Visibility.Visible;
+            
         }
 
         private void webControl_LoadingFrameComplete(object sender, FrameEventArgs e) {
-            Storyboard board = new Storyboard();
-            DoubleAnimation PR_S_Ou = new DoubleAnimation(5, 0, new Duration(TimeSpan.FromMilliseconds(150)));
-
-            board.Children.Add(PR_S_Ou);
-            Storyboard.SetTarget(PR_S_Ou, Prog);
-            Storyboard.SetTargetProperty(PR_S_Ou, new PropertyPath("(Height)"));
-            board.Begin();
-
-            C_BTN_Stop.Visibility = System.Windows.Visibility.Collapsed;
-            C_BTN_Refresh.Visibility = System.Windows.Visibility.Visible;
-
             if (FavoriteExists(webControl.Source.ToString())) {
                 C_BTN_Favorites.Visibility = System.Windows.Visibility.Collapsed;
                 C_BTN_Favorites_H.Visibility = System.Windows.Visibility.Visible;
@@ -247,13 +229,11 @@ namespace Opeity {
         }
 
         private void webControl_LoadingFrameFailed(object sender, LoadingFrameFailedEventArgs e) {
-            C_BTN_Stop.Visibility = System.Windows.Visibility.Collapsed;
-            C_BTN_Refresh.Visibility = System.Windows.Visibility.Visible;
+            
         }
 
         private void webControl_Crashed(object sender, CrashedEventArgs e) {
-            C_BTN_Stop.Visibility = System.Windows.Visibility.Collapsed;
-            C_BTN_Refresh.Visibility = System.Windows.Visibility.Visible;
+            
         }
 
         #endregion

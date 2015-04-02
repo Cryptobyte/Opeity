@@ -11,6 +11,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <DoubleAnimation x:Key="Prog_in" Storyboard.TargetProperty="Height" To="5" Duration="0:0:0.2" />
+            <DoubleAnimation x:Key="Prog_ou" Storyboard.TargetProperty="Height" To="0" Duration="0:0:0.2" />
         </ResourceDictionary>
     </Controls:MetroWindow.Resources>
 
@@ -37,26 +40,28 @@
             </Button>
 
             <Button x:Name="C_BTN_Refresh" Click="C_BTN_Refresh_Click" ToolTip="Refresh">
-                <Button.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Ignore Cache" Click="C_BTN_Refresh_iCache" />
-                    </ContextMenu>
-                </Button.ContextMenu>
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="15" Height="15" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_refresh}" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </StackPanel>
-            </Button>
-            
-            <Button x:Name="C_BTN_Stop" Click="C_BTN_Stop_Click" ToolTip="Stop" Visibility="Hidden">
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="15" Height="15" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_cancel}" />
-                        </Rectangle.OpacityMask>
+                        <Rectangle.Style>
+                            <Style TargetType="Rectangle">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsNavigating, ElementName=webControl}" Value="True">
+                                        <Setter Property="OpacityMask">
+                                            <Setter.Value>
+                                                <VisualBrush Visual="{StaticResource appbar_stop}" Stretch="Fill" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsNavigating, ElementName=webControl}" Value="False">
+                                        <Setter Property="OpacityMask">
+                                            <Setter.Value>
+                                                <VisualBrush Visual="{StaticResource appbar_refresh}" Stretch="Fill" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Rectangle.Style>
                     </Rectangle>
                 </StackPanel>
             </Button>
@@ -154,7 +159,30 @@
     </Controls:MetroWindow.Flyouts>
 
     <Grid>
-        <ProgressBar Name="Prog" Margin="0,0,0,0" VerticalAlignment="Top" Panel.ZIndex="1" Height="0" IsIndeterminate="True" />
+        <ProgressBar Name="Prog" Margin="0,0,0,0" VerticalAlignment="Top" Panel.ZIndex="1" Height="0" IsIndeterminate="True">
+            <ProgressBar.Style>
+                <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsNavigating, ElementName=webControl}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <StaticResource ResourceKey="Prog_in"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <StaticResource ResourceKey="Prog_ou"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ProgressBar.Style>
+        </ProgressBar>
         <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose" ShowCreatedWebView="webControl_ShowCreatedWebView" />
     </Grid>
 </Controls:MetroWindow>
