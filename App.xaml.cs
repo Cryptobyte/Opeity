@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using Awesomium.Core;
 using Opeity.Components;
 using Opeity.Properties;
@@ -16,7 +17,8 @@ namespace Opeity {
                 WebCore.Initialize(new WebConfig() {
                     HomeURL = new System.Uri(Prefs.UserPreferences.Home),
                     ReduceMemoryUsageOnNavigation = Prefs.UserPreferences.FreeMemoryOnNav,
-                    UserAgent = Prefs.UserPreferences.UserAgent
+                    UserAgent = Prefs.UserPreferences.UserAgent,
+                    ChildProcessPath = Path.Combine(Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory), "Opeity_Renderer.exe")
                 });
             }
 

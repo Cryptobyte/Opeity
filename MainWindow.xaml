@@ -11,9 +11,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DoubleAnimation x:Key="Prog_in" Storyboard.TargetProperty="Height" To="5" Duration="0:0:0.2" />
-            <DoubleAnimation x:Key="Prog_ou" Storyboard.TargetProperty="Height" To="0" Duration="0:0:0.2" />
         </ResourceDictionary>
     </Controls:MetroWindow.Resources>
 
@@ -23,7 +20,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="15" Height="15" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}">
                         <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_home}" />
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_home_empty}" />
                         </Rectangle.OpacityMask>
                     </Rectangle>
                 </StackPanel>
@@ -48,7 +45,7 @@
                                     <DataTrigger Binding="{Binding IsNavigating, ElementName=webControl}" Value="True">
                                         <Setter Property="OpacityMask">
                                             <Setter.Value>
-                                                <VisualBrush Visual="{StaticResource appbar_stop}" Stretch="Fill" />
+                                                <VisualBrush Visual="{StaticResource appbar_close}" Stretch="Fill" />
                                             </Setter.Value>
                                         </Setter>
                                     </DataTrigger>
@@ -159,6 +156,8 @@
     </Controls:MetroWindow.Flyouts>
 
     <Grid>
+        <!-- https://github.com/Cryptobyte/Opeity/issues/1 -->
+        <!-- Comment this element out for best performance -->
         <ProgressBar Name="Prog" Margin="0,0,0,0" VerticalAlignment="Top" Panel.ZIndex="1" Height="0" IsIndeterminate="True">
             <ProgressBar.Style>
                 <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
@@ -167,14 +166,14 @@
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <StaticResource ResourceKey="Prog_in"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="5" Duration="0:0:0.2" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                             <DataTrigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <StaticResource ResourceKey="Prog_ou"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="Height" From="5" To="0" Duration="0:0:0.2" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.ExitActions>

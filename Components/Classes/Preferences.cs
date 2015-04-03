@@ -25,15 +25,44 @@ namespace Opeity.Components.Classes {
         /// </summary>
         public bool ForceSingleWindow { get; set; }
 
+        /// <summary>
+        /// Allows or disallows web scripts access to clipboard contents
+        /// </summary>
+        public bool CanScriptsAccessClipboard { get; set; }
 
         /// <summary>
-        /// Class main entry point
+        /// Allows or disallows HTML5 databases
+        /// </summary>
+        public bool HTML5Databases { get; set; }
+
+        /// <summary>
+        /// Enables or disables browser GPU acceleration
+        /// </summary>
+        public bool EnableGPUAcceleration { get; set; }
+
+        /// <summary>
+        /// Enables or disables WebGL
+        /// </summary>
+        public bool EnableWebGL { get; set; }
+
+        /// <summary>
+        /// Forces WPF components to render at specific FPS
+        /// </summary>
+        public int FPSLock { get; set; }
+
+        /// <summary>
+        /// Class main entry point, also defines default settings
         /// </summary>
         public Preferences() {
             Home = "http://www.google.com/";
             UserAgent = "Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36";
             FreeMemoryOnNav = true;
             ForceSingleWindow = true;
+            CanScriptsAccessClipboard = true;
+            HTML5Databases = true;
+            EnableGPUAcceleration = true;
+            EnableWebGL = true;
+            FPSLock = 60;
         }
     }
 }

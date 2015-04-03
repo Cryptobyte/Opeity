@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Awesomium.Core;
 using MahApps.Metro.Controls;
@@ -100,20 +101,22 @@ namespace Opeity {
 
             Prefs = new PrefAdapter();
 
-            #endregion
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(
+                typeof(Timeline),
+                new FrameworkPropertyMetadata { DefaultValue = Prefs.UserPreferences.FPSLock }
+            );
 
-            #region Web Preferences
-
-            WebPreferences.Default.CanScriptsAccessClipboard = true;
-            WebPreferences.Default.Databases = true;
-            WebPreferences.Default.EnableGPUAcceleration = true;
+            WebPreferences.Default.CanScriptsAccessClipboard = Prefs.UserPreferences.CanScriptsAccessClipboard;
+            WebPreferences.Default.Databases = Prefs.UserPreferences.HTML5Databases;
+            WebPreferences.Default.EnableGPUAcceleration = Prefs.UserPreferences.EnableGPUAcceleration;
+            WebPreferences.Default.WebGL = Prefs.UserPreferences.EnableWebGL;
+            WebPreferences.Default.UniversalAccessFromFileURL = true;
             WebPreferences.Default.FileAccessFromFileURL = true;
             WebPreferences.Default.ProxyConfig = "auto";
-            WebPreferences.Default.UniversalAccessFromFileURL = true;
-            WebPreferences.Default.WebGL = true;
-            WebCore.DownloadBegin += OnDownloadBegin;
 
             #endregion
+
+            WebCore.DownloadBegin += OnDownloadBegin;
 
             LoadFavorites();
         }
