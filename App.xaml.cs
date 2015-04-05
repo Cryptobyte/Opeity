@@ -2,7 +2,6 @@
 using System.Windows;
 using Awesomium.Core;
 using Opeity.Components;
-using Opeity.Properties;
 
 namespace Opeity {
     public partial class App : Application {
@@ -13,6 +12,12 @@ namespace Opeity {
         protected override void OnStartup(StartupEventArgs e) {
             PrefAdapter Prefs = new PrefAdapter();
 
+            /*
+             * Opeity_Renderer.exe is our C++ Child Process (not included in Github codebase)
+             * 
+             * If you want to build without this, simply delete the ChildProcessPath line and 
+             * Awesomium will use its default child process awesomium_process
+             */
             if (!WebCore.IsInitialized) {
                 WebCore.Initialize(new WebConfig() {
                     HomeURL = new System.Uri(Prefs.UserPreferences.Home),

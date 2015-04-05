@@ -148,10 +148,6 @@
             <Controls:Flyout Header="Settings" Position="Right" Theme="Accent" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}">
                 <Frame Source="/Opeity;component/Views/Settings.xaml" />
             </Controls:Flyout>
-
-            <Controls:Flyout Header="Notify" Position="Bottom" Theme="Accent" IsModal="False" IsPinned="True" CloseButtonVisibility="Collapsed" TitleVisibility="Collapsed" Height="50" Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}">
-                <Label Name="Notify_Label" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-            </Controls:Flyout>
         </Controls:FlyoutsControl>
     </Controls:MetroWindow.Flyouts>
 

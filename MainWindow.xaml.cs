@@ -4,6 +4,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Awesomium.Core;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using NDatabase;
 using Opeity.Components;
 using Opeity.Components.Classes;
@@ -22,33 +23,6 @@ namespace Opeity {
         private bool HasActiveDownloads() {
             WebCore.Downloads.ClearNonActive();
             return WebCore.Downloads.Count > 0;
-        }
-
-        /// <summary>
-        /// Opens the Notify Flyout for a short time
-        /// </summary>
-        /// <param name="Message">Message to show user</param>
-        private void Notify(String Message) {
-            var flyout = this.Flyouts.Items[2] as Flyout;
-
-            if (flyout.IsOpen)
-                return;
-
-            Notify_Label.Content = Message;
-
-            DispatcherTimer dTx = new DispatcherTimer();
-
-            dTx.Tick += delegate {
-                dTx.Stop();
-
-                if (flyout.IsOpen)
-                    flyout.IsOpen = false;
-            };
-
-            dTx.Interval = new TimeSpan(0, 0, 3);
-            dTx.Start();
-
-            flyout.IsOpen = true;
         }
 
         /// <summary>
@@ -86,6 +60,23 @@ namespace Opeity {
             return false;
         }
 
+        /// <summary>
+        /// Converts cryptic file size to readable file size for display
+        /// </summary>
+        /// <param name="inSize">Cryptic file size to convert</param>
+        /// <returns>Human readable file size</returns>
+        private String ReadableSize(double inSize) {
+            string[] sizes = { "B", "KB", "MB", "GB" };
+            int order = 0;
+
+            while (inSize >= 1024 && order + 1 < sizes.Length) {
+                order++;
+                inSize = inSize / 1024;
+            }
+
+            return String.Format("{0:0.#}{1}", inSize, sizes[order]);
+        }
+
         #endregion
 
         /// <summary>
@@ -98,6 +89,7 @@ namespace Opeity {
 
             Session = WebCore.Sessions[Profiler.UserProfileBase] ?? WebCore.CreateWebSession(Profiler.UserProfileBase, WebPreferences.Default);
             webControl.WebSession = Session;
+            webControl.NavigationInfo = NavigationInfo.Normal;
 
             Prefs = new PrefAdapter();
 
@@ -121,13 +113,43 @@ namespace Opeity {
             LoadFavorites();
         }
 
-        private void OnDownloadBegin(object sender, DownloadBeginEventArgs e) {
-            Notify(String.Format("Downloading {0}", e.Info.FileName));
+        private async void OnDownloadBegin(object sender, DownloadBeginEventArgs e) {
+            DateTime startTime = DateTime.Now;
+            var _DController = await this.ShowProgressAsync("Downloading..", "Waiting..");
+
+            _DController.SetCancelable(e.Info.CanCancel());
+
+            e.Info.ProgressChanged += delegate {
+                TimeSpan timeSpent = DateTime.Now - startTime;
+
+                if (_DController.IsCanceled)
+                    e.Info.Cancel();
+
+                _DController.SetMessage(
+                    String.Format(
+                        "File: {0}{7}Source: {1}{7}Destination: {2}{7}{7}{3} of {4} at {5}/s (About {6} seconds remaining)",
+                        e.Info.FileName,
+                        e.Info.Url,
+                        e.Info.SavePath,
+                        ReadableSize(e.Info.ReceivedBytes), 
+                        ReadableSize(e.Info.TotalBytes), 
+                        ReadableSize(e.Info.CurrentSpeed),
+                        (int)(timeSpent.TotalSeconds / e.Info.Progress * (100 - e.Info.Progress)),
+                        Environment.NewLine
+                    )
+                 );
+
+                try {
+                    _DController.SetProgress((double)e.Info.Progress);
+                } catch { _DController.SetIndeterminate(); }
+            };
+
+            e.Info.Canceled += delegate {
+                _DController.CloseAsync();
+            };
 
             e.Info.Completed += delegate {
-                if (!HasActiveDownloads()) {
-                    //All Downloads Finished
-                }
+                _DController.CloseAsync();
             };
         }
 
@@ -181,6 +203,14 @@ namespace Opeity {
             }
 
             LoadFavorites();
+
+            if (FavoriteExists(webControl.Source.ToString())) {
+                C_BTN_Favorites.Visibility = System.Windows.Visibility.Collapsed;
+                C_BTN_Favorites_H.Visibility = System.Windows.Visibility.Visible;
+            } else {
+                C_BTN_Favorites_H.Visibility = System.Windows.Visibility.Collapsed;
+                C_BTN_Favorites.Visibility = System.Windows.Visibility.Visible;
+            }
         }
 
         private void Btn_Fav_Cancel_Click(object sender, RoutedEventArgs e) {
@@ -240,10 +270,6 @@ namespace Opeity {
         }
 
         #endregion
-
-        private void C_BTN_Refresh_iCache(object sender, RoutedEventArgs e) {
-            webControl.Reload(true);
-        }
 
         private void C_BTN_Stop_Click(object sender, RoutedEventArgs e) {
             webControl.Stop();
