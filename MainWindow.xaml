@@ -178,6 +178,6 @@
                 </Style>
             </ProgressBar.Style>
         </ProgressBar>
-        <awe:WebControl Name="webControl" Margin="0,0,0,0" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose" ShowCreatedWebView="webControl_ShowCreatedWebView" />
+        <awe:WebControl Name="webControl" Margin="0,0,0,0" KeyDown="webControl_KeyDown" LoadingFrame="webControl_LoadingFrame" LoadingFrameComplete="webControl_LoadingFrameComplete" LoadingFrameFailed="webControl_LoadingFrameFailed" Crashed="webControl_Crashed" DocumentReady="webControl_DocumentReady" JavascriptRequest="webControl_JavascriptRequest" ShowJavascriptDialog="webControl_ShowJavascriptDialog" WindowClose="webControl_WindowClose" ShowCreatedWebView="webControl_ShowCreatedWebView" />
     </Grid>
 </Controls:MetroWindow>

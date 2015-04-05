@@ -10,8 +10,13 @@ using Opeity.Components.Classes;
 
 namespace Opeity {
     public partial class MainWindow : MetroWindow {
+
+        #region Globals
+
         WebSession Session;
         PrefAdapter Prefs;
+
+        #endregion
 
         #region Helper Methods
 
@@ -112,6 +117,8 @@ namespace Opeity {
             LoadFavorites();
         }
 
+        #region File Downloads
+
         private async void OnDownloadBegin(object sender, DownloadBeginEventArgs e) {
             DateTime startTime = DateTime.Now;
             var _DController = await this.ShowProgressAsync("Downloading..", "Waiting..");
@@ -151,6 +158,8 @@ namespace Opeity {
                 _DController.CloseAsync();
             };
         }
+
+        #endregion
 
         #region Window Browser Controls
 
@@ -270,10 +279,6 @@ namespace Opeity {
 
         #endregion
 
-        private void C_BTN_Stop_Click(object sender, RoutedEventArgs e) {
-            webControl.Stop();
-        }
-
         private void webControl_JavascriptRequest(object sender, JavascriptRequestEventArgs e) {
             if (!e.RequestToken)
                 return;
@@ -343,5 +348,46 @@ namespace Opeity {
 
             webControl.Source = e.TargetURL; //Force all popups into the main view (Temporary)
         }
+
+        #region Keyboard Shortcuts
+
+        private void webControl_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {
+            if (e.KeyboardDevice.Modifiers == System.Windows.Input.ModifierKeys.Control) {
+                switch (e.Key) {
+                    case System.Windows.Input.Key.OemPlus:
+                        webControl.ZoomIn();
+                        break;
+                    case System.Windows.Input.Key.OemMinus:
+                        webControl.ZoomOut();
+                        break;
+                    case System.Windows.Input.Key.D0:
+                        webControl.ResetZoom();
+                        break;
+                    case System.Windows.Input.Key.R:
+                        C_BTN_Refresh_Click(this, null);
+                        break;
+                    case System.Windows.Input.Key.D:
+                        C_BTN_Favorites_Click(this, null);
+                        break;
+                    case System.Windows.Input.Key.F5:
+                        webControl.Reload(true);
+                        break;
+                }
+            } else if (e.KeyboardDevice.Modifiers == System.Windows.Input.ModifierKeys.Alt) {
+                switch (e.Key) {
+                    case System.Windows.Input.Key.Home:
+                        C_BTN_Home_Click(this, null);
+                        break;
+                    case System.Windows.Input.Key.BrowserHome:
+                        C_BTN_Home_Click(this, null);
+                        break;
+                    case System.Windows.Input.Key.F4:
+                        this.Close();
+                        break;
+                }
+            }
+        }
+
+        #endregion
     }
 }
