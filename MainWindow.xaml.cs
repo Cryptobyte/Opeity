@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
 using Awesomium.Core;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -316,9 +315,11 @@ namespace Opeity {
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e) {
-            if (Environment.GetCommandLineArgs().Length > 1)
+            if (Environment.GetCommandLineArgs().Length > 1) {
                 webControl.Source = new Uri(Environment.GetCommandLineArgs()[1]);
-            else
+            } else if (Prefs.UserPreferences.SessionRestore) {
+                webControl.Source = new Uri(Prefs.UserPreferences.LastUrl);
+            } else
                 webControl.GoToHome();
         }
 
@@ -327,6 +328,7 @@ namespace Opeity {
                 //Downloads are still running!
             }
 
+            Prefs.UserPreferences.LastUrl = webControl.Source.ToString();
             Prefs.Save();
         }
 

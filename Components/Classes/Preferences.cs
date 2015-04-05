@@ -16,6 +16,11 @@ namespace Opeity.Components.Classes {
         public String UserAgent { get; set; }
 
         /// <summary>
+        /// Last Url Visited
+        /// </summary>
+        public String LastUrl { get; set; }
+
+        /// <summary>
         /// Uses Awesomium's function to free process memory on browser navigation
         /// </summary>
         public bool FreeMemoryOnNav { get; set; }
@@ -46,6 +51,11 @@ namespace Opeity.Components.Classes {
         public bool EnableWebGL { get; set; }
 
         /// <summary>
+        /// Enables or disables restoring the last visited page on browser launch
+        /// </summary>
+        public bool SessionRestore { get; set; }
+
+        /// <summary>
         /// Forces WPF components to render at specific FPS
         /// </summary>
         public int FPSLock { get; set; }
@@ -62,6 +72,7 @@ namespace Opeity.Components.Classes {
             HTML5Databases = true;
             EnableGPUAcceleration = true;
             EnableWebGL = true;
+            SessionRestore = false;
             FPSLock = 60;
         }
     }
