@@ -7,6 +7,7 @@ using MahApps.Metro.Controls.Dialogs;
 using NDatabase;
 using Opeity.Components;
 using Opeity.Components.Classes;
+using Opeity.Properties;
 
 namespace Opeity {
     public partial class MainWindow : MetroWindow {
@@ -14,7 +15,6 @@ namespace Opeity {
         #region Globals
 
         WebSession Session;
-        PrefAdapter Prefs;
 
         #endregion
 
@@ -95,17 +95,15 @@ namespace Opeity {
             webControl.WebSession = Session;
             webControl.NavigationInfo = NavigationInfo.Normal;
 
-            Prefs = new PrefAdapter();
-
             Timeline.DesiredFrameRateProperty.OverrideMetadata(
                 typeof(Timeline),
-                new FrameworkPropertyMetadata { DefaultValue = Prefs.UserPreferences.FPSLock }
+                new FrameworkPropertyMetadata { DefaultValue = Settings.Default.FPSLock }
             );
 
-            WebPreferences.Default.CanScriptsAccessClipboard = Prefs.UserPreferences.CanScriptsAccessClipboard;
-            WebPreferences.Default.Databases = Prefs.UserPreferences.HTML5Databases;
-            WebPreferences.Default.EnableGPUAcceleration = Prefs.UserPreferences.EnableGPUAcceleration;
-            WebPreferences.Default.WebGL = Prefs.UserPreferences.EnableWebGL;
+            WebPreferences.Default.CanScriptsAccessClipboard = Settings.Default.CanScriptsAccessClipboard;
+            WebPreferences.Default.Databases = Settings.Default.HTML5Databases;
+            WebPreferences.Default.EnableGPUAcceleration = Settings.Default.EnableGPUAcceleration;
+            WebPreferences.Default.WebGL = Settings.Default.EnableWebGL;
             WebPreferences.Default.UniversalAccessFromFileURL = true;
             WebPreferences.Default.FileAccessFromFileURL = true;
             WebPreferences.Default.ProxyConfig = "auto";
@@ -322,8 +320,9 @@ namespace Opeity {
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e) {
             if (Environment.GetCommandLineArgs().Length > 1) {
                 webControl.Source = new Uri(Environment.GetCommandLineArgs()[1]);
-            } else if (Prefs.UserPreferences.SessionRestore) {
-                webControl.Source = new Uri(Prefs.UserPreferences.LastUrl);
+            } else if (Settings.Default.SessionRestore) {
+                if (!String.IsNullOrEmpty(Settings.Default.LastUrl))
+                    webControl.Source = new Uri(Settings.Default.LastUrl);
             } else
                 webControl.GoToHome();
         }
@@ -333,8 +332,8 @@ namespace Opeity {
                 //Downloads are still running!
             }
 
-            Prefs.UserPreferences.LastUrl = webControl.Source.ToString();
-            Prefs.Save();
+            Settings.Default.LastUrl = webControl.Source.ToString();
+            Settings.Default.Save();
         }
 
         private void webControl_ShowCreatedWebView(object sender, ShowCreatedWebViewEventArgs e) {
